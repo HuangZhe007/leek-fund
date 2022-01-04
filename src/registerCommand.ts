@@ -1,7 +1,10 @@
+import { OKexProvider } from './explorer/okex/provider';
 import { commands, ExtensionContext, window } from 'vscode';
+import coingeckoData from './data/coingeckoData';
 import fundSuggestList from './data/fundSuggestData';
 import { BinanceProvider } from './explorer/binanceProvider';
 import BinanceService from './explorer/binanceService';
+import { CoingeckoProvider } from './explorer/coingecko/provider';
 import { FundProvider } from './explorer/fundProvider';
 import FundService from './explorer/fundService';
 import { NewsProvider } from './explorer/newsProvider';
@@ -37,7 +40,9 @@ export function registerViewEvent(
   stockProvider: StockProvider,
   newsProvider: NewsProvider,
   flashNewsOutputServer: FlashNewsOutputServer,
-  binanceProvider?: BinanceProvider
+  binanceProvider?: BinanceProvider,
+  coingeckoProvider?: CoingeckoProvider,
+  okexProvider?: OKexProvider
 ) {
   const leekModel = new LeekFundConfig();
   const newsService = new NewsService();
@@ -97,6 +102,69 @@ export function registerViewEvent(
     fundProvider.refresh();
   });
 
+  // coingecko
+  commands.registerCommand('leek-fund.deleteCoingecko', (target: { id: string }) => {
+    LeekFundConfig.removeCoingeckoCfg(target.id, () => {
+      coingeckoProvider?.refresh();
+    });
+  });
+  commands.registerCommand('leek-fund.refreshCoingecko', () => {
+    coingeckoProvider?.refresh();
+    const handler = window.setStatusBarMessage(`数据已刷新`);
+    setTimeout(() => {
+      handler.dispose();
+    }, 1000);
+  });
+  // add coin
+  commands.registerCommand('leek-fund.addCoingecko', () => {
+    /* if (!service.fundSuggestList.length) {
+      service.getFundSuggestList();
+      window.showInformationMessage(`获取基金数据中，请稍后再试`);
+      return;
+    } */
+
+    window.showQuickPick(coingeckoData, { placeHolder: '请输入币种' }).then((code) => {
+      if (!code) {
+        return;
+      }
+      LeekFundConfig.updateCoingeckoCfg(code.split('|')[0], () => {
+        coingeckoProvider?.refresh();
+      });
+    });
+  });
+
+  // okex
+  commands.registerCommand('leek-fund.deleteOKex', (target: { id: string }) => {
+    LeekFundConfig.removeOKexCfg(target.id, () => {
+      okexProvider?.refresh();
+    });
+  });
+  commands.registerCommand('leek-fund.refreshOKex', () => {
+    okexProvider?.refresh();
+    const handler = window.setStatusBarMessage(`数据已刷新`);
+    setTimeout(() => {
+      handler.dispose();
+    }, 1000);
+  });
+  // add coin
+  commands.registerCommand('leek-fund.addOKex', () => {
+    /* if (!service.fundSuggestList.length) {
+        service.getFundSuggestList();
+        window.showInformationMessage(`获取基金数据中，请稍后再试`);
+        return;
+      } */
+    window
+      .showQuickPick(LeekFundConfig.getOKexAllIds(), { placeHolder: '请输入交易对' })
+      .then((code) => {
+        if (!code) {
+          return;
+        }
+        LeekFundConfig.updateOKexCfg(code.split('|')[0], () => {
+          okexProvider?.refresh();
+        });
+      });
+  });
+
   // Stock operation
   commands.registerCommand('leek-fund.refreshStock', () => {
     stockProvider.refresh();
@@ -152,7 +220,10 @@ export function registerViewEvent(
         return;
       }
       // 存储到配置的时候是接口的参数格式，接口请求时不需要再转换
-      const newCode = code.replace('gb', 'gb_').replace('us', 'usr_').replace(/^[A-Z]/, it=>`cnf_${it}`);
+      const newCode = code
+        .replace('gb', 'gb_')
+        .replace('us', 'usr_')
+        .replace(/^[A-Z]/, (it) => `cnf_${it}`);
       LeekFundConfig.updateStockCfg(newCode, () => {
         stockProvider.refresh();
       });
@@ -496,11 +567,11 @@ export function registerViewEvent(
           const newCfg = [...statusBarStocks];
           const newStockId = res.description;
           const index = newCfg.indexOf(stockId);
-          if(newStockId ==='-1'){
+          if (newStockId === '-1') {
             if (index > -1) {
-              newCfg.splice(index,1);
+              newCfg.splice(index, 1);
             }
-          }else{
+          } else {
             if (statusBarStocks.includes(newStockId)) {
               window.showWarningMessage(`「${res.label}」已在状态栏`);
               return;

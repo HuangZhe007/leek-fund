@@ -26,12 +26,18 @@ import { cacheStocksRemindData } from './webview/leekCenterView';
 import { cacheFundAmountData, updateAmount } from './webview/setAmount';
 import { events } from './shared/utils';
 import FlashNewsOutputServer from './output/flash-news/FlashNewsOutputServer';
+import CoingeckoService from './explorer/coingecko/service';
+import { CoingeckoProvider } from './explorer/coingecko/provider';
+import OKexService from './explorer/okex/service';
+import { OKexProvider } from './explorer/okex/provider';
 
 let loopTimer: NodeJS.Timer | null = null;
-let binanceLoopTimer: NodeJS.Timer | null = null;
+let coinTimer: NodeJS.Timer | null = null;
 let fundTreeView: TreeView<any> | null = null;
 let stockTreeView: TreeView<any> | null = null;
 let binanceTreeView: TreeView<any> | null = null;
+let coingeckoTreeView: TreeView<any> | null = null;
+let okexTreeView: TreeView<any> | null = null;
 
 let flashNewsOutputServer: FlashNewsOutputServer | null = null;
 let profitBar: ProfitStatusBar | null = null;
@@ -67,6 +73,14 @@ export function activate(context: ExtensionContext) {
   const binanceProvider = new BinanceProvider(binanceService);
   const newsProvider = new NewsProvider();
 
+  // coingecko
+  const coingeckoService = new CoingeckoService(context);
+  const coingeckoProvider = new CoingeckoProvider(coingeckoService);
+
+  //okex
+  const okexService = new OKexService(context);
+  const okexProvider = new OKexProvider(okexService);
+
   const statusBar = new StatusBar(stockService, fundService);
   profitBar = new ProfitStatusBar();
 
@@ -82,9 +96,13 @@ export function activate(context: ExtensionContext) {
   binanceTreeView = window.createTreeView('leekFundView.binance', {
     treeDataProvider: binanceProvider,
   });
-
-  window.createTreeView('leekFundView.news', {
-    treeDataProvider: newsProvider,
+  // coingecko
+  coingeckoTreeView = window.createTreeView('leekFundView.coingecko', {
+    treeDataProvider: coingeckoProvider,
+  });
+  // okex
+  okexTreeView = window.createTreeView('leekFundView.okex', {
+    treeDataProvider: okexProvider,
   });
 
   // fix when TreeView collapse https://github.com/giscafer/leek-fund/issues/31
@@ -140,15 +158,15 @@ export function activate(context: ExtensionContext) {
     loopTimer = setInterval(loopCallback, intervalTime);
 
     /* 虚拟币不休市 */
-    if (binanceLoopTimer) {
-      clearInterval(binanceLoopTimer);
-      binanceLoopTimer = null;
+    if (coinTimer) {
+      clearInterval(coinTimer);
+      coinTimer = null;
     }
-    binanceLoopTimer = setInterval(
+    coinTimer = setInterval(
       () => {
-        if (binanceTreeView?.visible) {
-          binanceProvider.refresh();
-        }
+        binanceTreeView?.visible && binanceProvider.refresh();
+        coingeckoTreeView?.visible && coingeckoProvider.refresh();
+        okexTreeView?.visible && okexProvider.refresh();
       },
       // intervalTimeConfig < 3000 ? 3000 : intervalTimeConfig
       300000 // 该功能存在网络问题（一些网络有vpn都无法请求通），这里故意设置长时间
@@ -181,7 +199,9 @@ export function activate(context: ExtensionContext) {
     nodeStockProvider,
     newsProvider,
     flashNewsOutputServer,
-    binanceProvider
+    binanceProvider,
+    coingeckoProvider,
+    okexProvider
   );
 
   // Telemetry Event
@@ -218,8 +238,8 @@ export function deactivate() {
     clearInterval(loopTimer);
     loopTimer = null;
   }
-  if (binanceLoopTimer) {
-    clearInterval(binanceLoopTimer);
-    binanceLoopTimer = null;
+  if (coinTimer) {
+    clearInterval(coinTimer);
+    coinTimer = null;
   }
 }

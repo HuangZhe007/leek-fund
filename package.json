@@ -1,12 +1,12 @@
 {
-  "name": "leek-fund",
+  "name": "leek-fund-demo",
   "displayName": "韭菜盒子",
   "description": "韭菜盒子，VSCode 里也可以看股票 & 基金实时数据，做最好用的投资插件",
   "version": "2.0.3",
-  "author": "giscafer <giscafer@outlook.com>",
+  "author": "HuangZhe007 <315771855@qq.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/giscafer/leek-fund.git"
+    "url": "https://github.com/HuangZhe007/leek-fund.git"
   },
   "license": "MIT",
   "keywords": [
@@ -24,7 +24,7 @@
     "币安",
     "vscode"
   ],
-  "publisher": "giscafer",
+  "publisher": "HuangZhe007",
   "icon": "resources/logo.png",
   "engines": {
     "vscode": "^1.44.0"
@@ -42,7 +42,7 @@
       "activitybar": [
         {
           "id": "leekFundMenu",
-          "title": "LeekFund",
+          "title": "Demo",
           "icon": "resources/leekfund.svg"
         }
       ]
@@ -54,12 +54,13 @@
           "name": "Fund"
         },
         {
-          "id": "leekFundView.stock",
-          "name": "Stock"
+          "id": "leekFundView.okex",
+          "name": "OKex"
         },
         {
-          "id": "leekFundView.news",
-          "name": "XueQiu News"
+          "id": "leekFundView.coingecko",
+          "name": "Coingecko",
+          "visibility": "hidden"
         },
         {
           "id": "leekFundView.binance",
@@ -67,9 +68,9 @@
           "visibility": "hidden"
         },
         {
-          "id": "leekFundView.settings",
-          "visibility": "visible",
-          "name": "Settings"
+          "id": "leekFundView.stock",
+          "name": "Stock",
+          "visibility": "hidden"
         }
       ]
     },
@@ -115,6 +116,22 @@
         }
       },
       {
+        "command": "leek-fund.addCoingecko",
+        "title": "添加币种",
+        "icon": {
+          "light": "resources/light/add.svg",
+          "dark": "resources/dark/add.svg"
+        }
+      },
+      {
+        "command": "leek-fund.addOKex",
+        "title": "添加币种",
+        "icon": {
+          "light": "resources/light/add.svg",
+          "dark": "resources/dark/add.svg"
+        }
+      },
+      {
         "command": "leek-fund.setFundAmount",
         "title": "设置基金持仓金额",
         "icon": {
@@ -135,6 +152,14 @@
         "title": "删除基金"
       },
       {
+        "command": "leek-fund.deleteCoingecko",
+        "title": "删除币种"
+      },
+      {
+        "command": "leek-fund.deleteOKex",
+        "title": "删除币种"
+      },
+      {
         "command": "leek-fund.viewFundHistory",
         "title": "历史净值"
       },
@@ -144,6 +169,22 @@
       },
       {
         "command": "leek-fund.refreshFund",
+        "title": "刷新数据",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "leek-fund.refreshCoingecko",
+        "title": "刷新数据",
+        "icon": {
+          "light": "resources/light/refresh.svg",
+          "dark": "resources/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "leek-fund.refreshOKex",
         "title": "刷新数据",
         "icon": {
           "light": "resources/light/refresh.svg",
@@ -289,6 +330,16 @@
           "group": "navigation"
         },
         {
+          "command": "leek-fund.refreshCoingecko",
+          "when": "view == leekFundView.coingecko",
+          "group": "navigation"
+        },
+        {
+          "command": "leek-fund.refreshOKex",
+          "when": "view == leekFundView.okex",
+          "group": "navigation"
+        },
+        {
           "command": "leek-fund.sortFund",
           "when": "view == leekFundView.fund",
           "group": "navigation"
@@ -301,6 +352,16 @@
         {
           "command": "leek-fund.addFund",
           "when": "view == leekFundView.fund",
+          "group": "navigation"
+        },
+        {
+          "command": "leek-fund.addCoingecko",
+          "when": "view == leekFundView.coingecko",
+          "group": "navigation"
+        },
+        {
+          "command": "leek-fund.addOKex",
+          "when": "view == leekFundView.okex",
           "group": "navigation"
         },
         {
@@ -331,21 +392,6 @@
         {
           "command": "leek-fund.leekCenterView",
           "when": "view == leekFundView.stock",
-          "group": "navigation"
-        },
-        {
-          "command": "leek-fund.refreshFollow",
-          "when": "view == leekFundView.news",
-          "group": "navigation"
-        },
-        {
-          "command": "leek-fund.toggleFlashNews",
-          "when": "view == leekFundView.news",
-          "group": "navigation"
-        },
-        {
-          "command": "leek-fund.addNews",
-          "when": "view == leekFundView.news",
           "group": "navigation"
         },
         {
@@ -383,6 +429,16 @@
         {
           "command": "leek-fund.deleteFund",
           "when": "view == leekFundView.fund",
+          "group": "group4"
+        },
+        {
+          "command": "leek-fund.deleteCoingecko",
+          "when": "view == leekFundView.coingecko",
+          "group": "group4"
+        },
+        {
+          "command": "leek-fund.deleteOKex",
+          "when": "view == leekFundView.okex",
           "group": "group4"
         },
         {
@@ -424,16 +480,6 @@
           "command": "leek-fund.setPairTop",
           "when": "view == leekFundView.binance",
           "group": "group1"
-        },
-        {
-          "command": "leek-fund.viewUserTimeline",
-          "when": "view == leekFundView.news",
-          "group": "group0"
-        },
-        {
-          "command": "leek-fund.deleteUser",
-          "when": "view == leekFundView.news",
-          "group": "group1"
         }
       ]
     },
@@ -468,6 +514,26 @@
             "005963"
           ],
           "description": "配置需要监控的基金代码（建议通过界面新增）"
+        },
+        "leek-fund.coingecko": {
+          "type": "array",
+          "default": [
+            "aelf"
+          ],
+          "description": "配置需要监控的币种（建议通过界面新增）"
+        },
+        "leek-fund.okex": {
+          "type": "array",
+          "default": [
+            "ELF-USDT",
+            "ETH-USDT",
+            "BTC-USDT"
+          ],
+          "description": "配置需要监控的交易对（建议通过界面新增）"
+        },
+        "leek-fund.okex-all-ids": {
+          "type": "array",
+          "default": []
         },
         "leek-fund.binance": {
           "type": "array",
@@ -589,20 +655,20 @@
         "contents": "无数据，请检查网络或添加基金"
       },
       {
+        "view": "leekFundView.coingecko",
+        "contents": "无数据，请检查网络或添加币种"
+      },
+      {
+        "view": "leekFundView.okex",
+        "contents": "无数据，请检查网络或添加币种"
+      },
+      {
         "view": "leekFundView.stock",
         "contents": "无数据，请检查网络或添加股票"
       },
       {
         "view": "leekFundView.binance",
         "contents": "无数据，请检查网络或添加交易对"
-      },
-      {
-        "view": "leekFundView.news",
-        "contents": "无数据，请检查网络或添加关注用户"
-      },
-      {
-        "view": "leekFundView.settings",
-        "contents": "\n [🏠️ 韭菜之家](command:leek-fund.leekCenterView) \n [🌈个性化设置](command:leek-fund.customSetting)\n[🛠打开配置页](command:leek-fund.openConfigPage)\n[💰打赏作者@giscafer](command:leek-fund.donate)\n 欢迎使用韭菜盒子^_^，[使用手册](https://github.com/giscafer/leek-fund/issues/23)；论坛[韭菜盒子社区](command:leek-fund.tucaoForum)，源码[Github](https://github.com/giscafer/leek-fund)，加群交流[微信群](https://github.com/giscafer/leek-fund/issues/19)， 电报群[Telegram](https://t.me/joinchat/VKxykRyeRNcibg7I-ykZMg)"
       }
     ]
   },
@@ -661,6 +727,7 @@
   "dependencies": {
     "amplitude": "^5.1.4",
     "axios": "^0.19.2",
+    "bignumber.js": "^9.0.2",
     "compare-versions": "^3.6.0",
     "iconv-lite": "^0.6.2",
     "lodash.clonedeep": "^4.5.0",

@@ -73,6 +73,80 @@ export class LeekFundConfig extends BaseConfig {
   }
   // Fund End
 
+  // Coingecko Begin
+  static updateCoingeckoCfg(codes: string, cb?: Function) {
+    this.updateConfig('leek-fund.coingecko', codes.split(',')).then(() => {
+      window.showInformationMessage(`coingecko Successfully add.`);
+      if (cb && typeof cb === 'function') {
+        cb(codes);
+      }
+    });
+  }
+
+  static removeCoingeckoCfg(code: string, cb?: Function) {
+    this.removeConfig('leek-fund.coingecko', code).then(() => {
+      window.showInformationMessage(`coingecko Successfully delete.`);
+      if (cb && typeof cb === 'function') {
+        cb(code);
+      }
+    });
+  }
+
+  static setCoingeckoTopCfg(code: string, cb?: Function) {
+    let configArr: string[] = this.getConfig('leek-fund.coingecko');
+
+    configArr = [code, ...configArr.filter((item) => item !== code)];
+
+    this.setConfig('leek-fund.coingecko', configArr).then(() => {
+      window.showInformationMessage(`coingecko successfully set to top.`);
+      if (cb && typeof cb === 'function') {
+        cb(code);
+      }
+    });
+  }
+  // Coingecko End
+
+  // OKex Begin
+  static updateOKexCfg(codes: string, cb?: Function) {
+    this.updateConfig('leek-fund.okex', codes.split(',')).then(() => {
+      window.showInformationMessage(`okex Successfully add.`);
+      if (cb && typeof cb === 'function') {
+        cb(codes);
+      }
+    });
+  }
+
+  static removeOKexCfg(code: string, cb?: Function) {
+    this.removeConfig('leek-fund.okex', code).then(() => {
+      window.showInformationMessage(`okex Successfully delete.`);
+      if (cb && typeof cb === 'function') {
+        cb(code);
+      }
+    });
+  }
+  static setOKexAllIds(ids: string[]) {
+    this.setConfig('leek-fund.okex-all-ids', ids)
+  }
+  static getOKexAllIds() {
+    return this.getConfig('leek-fund.okex-all-ids');
+  }
+  static getOKexIds() {
+    return this.getConfig('leek-fund.okex');
+  }
+  static setOKexTopCfg(code: string, cb?: Function) {
+    let configArr: string[] = this.getConfig('leek-fund.okex');
+
+    configArr = [code, ...configArr.filter((item) => item !== code)];
+
+    this.setConfig('leek-fund.okex', configArr).then(() => {
+      window.showInformationMessage(`okex successfully set to top.`);
+      if (cb && typeof cb === 'function') {
+        cb(code);
+      }
+    });
+  }
+  // OKex End
+
   // Stock Begin
   static updateStockCfg(codes: string, cb?: Function) {
     this.updateConfig('leek-fund.stocks', codes.split(',')).then(() => {
@@ -94,17 +168,17 @@ export class LeekFundConfig extends BaseConfig {
   //addStockToBarCfg
   static addStockToBarCfg(code: string, cb?: Function) {
     let configArr: string[] = this.getConfig('leek-fund.statusBarStock');
-    if(configArr.length >=4){
+    if (configArr.length >= 4) {
       window.showInformationMessage(`StatusBar Exceeding Length.`);
       if (cb && typeof cb === 'function') {
         cb(code);
       }
-    }else if(configArr.includes(code)){
+    } else if (configArr.includes(code)) {
       window.showInformationMessage(`StatusBar Already Have.`);
       if (cb && typeof cb === 'function') {
         cb(code);
       }
-    }else{
+    } else {
       configArr.push(code);
       this.setConfig('leek-fund.statusBarStock', configArr).then(() => {
         window.showInformationMessage(`Stock Successfully add to statusBar.`);
@@ -113,7 +187,6 @@ export class LeekFundConfig extends BaseConfig {
         }
       });
     }
-
   }
   static setStockTopCfg(code: string, cb?: Function) {
     let configArr: string[] = this.getConfig('leek-fund.stocks');

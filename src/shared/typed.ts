@@ -25,6 +25,10 @@ export enum TreeItemType {
   STOCK = 'stock',
   /** 币安 */
   BINANCE = 'binance',
+  // coingecko
+  COINGECKO = 'coingecko',
+  // okex
+  OKEX = 'okex',
 }
 
 export interface IAmount {
